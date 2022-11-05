@@ -1,34 +1,32 @@
 # samplernn-pytorch
 
-A PyTorch implementation of [SampleRNN: An Unconditional End-to-End Neural Audio Generation Model](https://arxiv.org/abs/1612.07837).
+[SampleRNN:无条件端到端神经音频生成模型]的PyTorch实现(https://arxiv.org/abs/1612.07837).
 
-![A visual representation of the SampleRNN architecture](http://deepsound.io/images/samplernn.png)
+![SampleRNN架构的可视化表示](./imgs/f1.png)
 
-It's based on the reference implementation in Theano: https://github.com/soroushmehr/sampleRNN_ICLR2017. Unlike the Theano version, our code allows training models with arbitrary number of tiers, whereas the original implementation allows maximum 3 tiers. However it doesn't allow using LSTM units (only GRU). For more details and motivation behind rewriting this model to PyTorch, see our blog post: http://deepsound.io/samplernn_pytorch.html.
+基础代码请参考https://github.com/deepsound-project/samplernn-pytorch（使用的pytorch版本较老，在30系列上无法搭建正确的gpu环境来跑，所以修改了大量代码适配比较新的pytorch）
 
 ## Dependencies
 
-This code requires Python 3.5+ and PyTorch 0.1.12+. Installation instructions for PyTorch are available on their website: http://pytorch.org/. You can install the rest of the dependencies by running `pip install -r requirements.txt`.
+可以通过运行“pip install-r requirements.txt”来安装部分依赖项。（原始requirement.txt中有些依赖需要替换为较新的）
 
 ## Datasets
 
-We provide a script for creating datasets from YouTube single-video mixes. It downloads a mix, converts it to wav and splits it into equal-length chunks. To run it you need youtube-dl (a recent version; the latest version from pip should be okay) and ffmpeg. To create an example dataset - 4 hours of piano music split into 8 second chunks, run:
-
+构建数据集：需要先安装ffmpeg和youtube-dl ,然后运行以下指令
 ```
 cd datasets
 ./download-from-youtube.sh "https://www.youtube.com/watch?v=EhO_MrRfftU" 8 piano
 ```
 
-You can also prepare a dataset yourself. It should be a directory in `datasets/` filled with equal-length wav files. Or you can create your own dataset format by subclassing `torch.utils.data.Dataset`. It's easy, take a look at `dataset.FolderDataset` in this repo for an example.
+可以自己准备数据集：“datasets/”中的一个目录，放置等长的wav文件。也可以通过子类化`torch.utils.data.dataset`创建自己的数据集格式。可参考FolderDataset
 
 ## Training
-
-To train the model you need to run `train.py`. All model hyperparameters are settable in the command line. Most hyperparameters have sensible default values, so you don't need to provide all of them. Run `python train.py -h` for details. To train on the `piano` dataset using the best hyperparameters we've found, run:
-
+在命令行训练模型（也可直接修改train.py中的默认参数值进行训练）：
 ```
 python train.py --exp TEST --frame_sizes 16 4 --n_rnn 2 --dataset piano
 ```
+结果-训练日志、损失图、模型检查点和生成的样本将保存在“results/”中。
 
-The results - training log, loss plots, model checkpoints and generated samples will be saved in `results/`.
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    
-We also have an option to monitor the metrics using [CometML](https://www.comet.ml/). To use it, just pass your API key as `--comet_key` parameter to `train.py`.
+## result 
+目前的情况是代码可正常run，但生成的音频连波形都没有，后续会持续找问题，如果大家有修改建议或讨论，我将非常感谢！
+                                                    
